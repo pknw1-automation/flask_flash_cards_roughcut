@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .question-container {
+            margin-bottom: 20px;
+        }
+        .question {
+            margin-bottom: 5px;
+            font-size: 1.2em;
+        }
+        .metadata {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .metadata a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .metadata a:hover {
+            text-decoration: underline;
+        }
+        .note {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .answers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .answers button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #f9f9f9;
+        }
+        .answers button.correct {
+            background-color: green;
+            color: white;
+        }
+        .answers button.incorrect {
+            background-color: red;
+            color: white;
+        }
+        .complete {
+            color: green;
+            font-weight: bold;
+        }
+
+        /* Responsive Design for Mobile */
+        @media (max-width: 600px) {
+            .answers {
+                flex-direction: column; /* Stack buttons vertically */
+            }
+            .answers button {
+                width: 100%; /* Make buttons fill the width */
+                box-sizing: border-box; /* Ensure padding doesn't exceed width */
+            }
+        }
+    </style>
+</head>
+<body>
+    {% for item in data %}
+        <div class="question-container">
+            <div class="question">{{ item.Question }}</div>
+            <div class="metadata">
+                <div> {{ item.Category }} <a href="{{ item.Reference }}" target="_blank">Reference</a></div>
+            </div>
+            {% if item.Correct | length > 1 %}
+                <div class="note">Please select all that apply</div>
+            {% endif %}
+            <div class="answers" data-correct="{{ item.Correct | join(',') }}">
+                {% for answer in item.ShuffledAnswers %}
+                    <button onclick="toggleAnswer(this, '{{ answer }}')">{{ answer }}</button>
+                {% endfor %}
+            </div>
+            <div class="complete" style="display: none;">Complete</div>
+        </div>
+    {% endfor %}
+    <script>
+        function toggleAnswer(button, answer) {
+            const parent = button.parentElement;
+            const correctAnswers = parent.getAttribute("data-correct").split(",");
+            const isCorrect = correctAnswers.includes(answer);
+
+            // Toggle button state
+            if (button.classList.contains("correct") || button.classList.contains("incorrect")) {
+                button.classList.remove("correct", "incorrect");
+            } else {
+                button.classList.add(isCorrect ? "correct" : "incorrect");
+            }
+
+            // Check completion
+            const selectedCorrect = [...parent.querySelectorAll(".correct")].map(btn => btn.textContent);
+            const selectedIncorrect = [...parent.querySelectorAll(".incorrect")].length;
+
+            const isComplete = 
+                correctAnswers.every(ans => selectedCorrect.includes(ans)) && 
+                selectedCorrect.length === correctAnswers.length && 
+                selectedIncorrect === 0;
+
+            parent.nextElementSibling.style.display = isComplete ? "block" : "none";
+        }
+    </script>
+</body>
+</html>
+

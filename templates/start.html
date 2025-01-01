@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+div.bottom {
+    height: 100px;
+    width: 80%;
+    padding-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: none;
+    margin-bottom: none;
+    border-top: 4px solid #00ccff;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    background-color: #575757;
+}
+
+div.col {
+    float: left;
+    width: 33%;
+}
+
+
+
+	.options-container {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: lightblue;
+	    width: 50%;
+        }
+        .question-container {
+            margin-bottom: 20px;
+	    padding: 10px;
+	    background-color: lightblue;
+        }
+        .question {
+            margin-bottom: 5px;
+            font-size: 1.2em;
+        }
+        .metadata {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .metadata a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .metadata a:hover {
+            text-decoration: underline;
+        }
+        .note {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .answers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .answers button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #f9f9f9;
+        }
+        .answers button.correct {
+            background-color: green;
+            color: white;
+        }
+        .answers button.incorrect {
+            background-color: red;
+            color: white;
+        }
+        .complete {
+            color: green;
+            font-weight: bold;
+        }
+
+        /* Responsive Design for Mobile */
+        @media (max-width: 600px) {
+            .answers {
+                flex-direction: column; /* Stack buttons vertically */
+            }
+            .answers button {
+                width: 100%; /* Make buttons fill the width */
+                box-sizing: border-box; /* Ensure padding doesn't exceed width */
+            }
+        }
+    </style>
+</head>
+<body>
+{% for sources in data %}
+    <div class="options-container" name="{{ sources['source_name'] }}" >
+	    <form action="/process-form" method="GET">
+<div class="bottom">
+    <div class="col"> <img src="{{sources.logo}}" /></div>
+    <div class="col">
+      <select name="myQuestions" id="myQuestions" >
+      <option value="amount=25" default># of Questions</option>
+      <option value="amount=10">10</option>
+      <option value="amount=20">20</option>
+      <option value="amount=30">30</option>
+      <option value="amount=40">40</option>
+      <option value="amount50">50</option>
+      </select>
+  <br>
+    <select name="difficulty" id="difficulty" >
+    <option value="">Question Difficulty</option>
+    <option value="&difficulty=easy">Easy</option>
+    <option value="&difficulty=medium">Medium</option>
+    <option value="&difficulty=hard">Hard</option>
+    </select>
+  <br>
+
+
+<select id="trivia" name="trivia" >
+<option value="" default>All Category</option>
+                        <option value="&category=9">General Knowledge</option><option value="&category=10">Entertainment: Books</option><option value="&category=11">Entertainment: Film</option><option value="&category=12">Entertainment: Music</option><option value="&category=13">Entertainment: Musicals &amp; Theatres</option><option value="&category=14">Entertainment: Television</option><option value="&category=15">Entertainment: Video Games</option><option value="&category=16">Entertainment: Board Games</option><option value="&category=17">Science &amp; Nature</option><option value="&category=18">Science: Computers</option><option value="&category=19">Science: Mathematics</option><option value="&category=20">Mythology</option><option value="&category=21">Sports</option><option value="&category=22">Geography</option><option value="&category=23">History</option><option value="&category=24">Politics</option><option value="&category=25">Art</option><option value="&category=26">Celebrities</option><option value="&category=27">Animals</option><option value="&category=28">Vehicles</option><option value="&category=29">Entertainment: Comics</option><option value="&category=30">Science: Gadgets</option><option value="&category=31">Entertainment: Japanese Anime &amp; Manga</option><option value="&category=32">Entertainment: Cartoon &amp; Animations</option>
+                        
+    </div>
+    <div class="col">{{sources.info}}</div>
+
+    <button class="btn btn-lg btn-primary btn-block" type="submit" data-bcup-haslogintext="no">Generate API URL</button>
+</div>
+
+<input type="submit" name="submit">
+
+		    </form>
+	    </div>
+    
+	    {% endfor %}
+
+</body>
+</html>
+

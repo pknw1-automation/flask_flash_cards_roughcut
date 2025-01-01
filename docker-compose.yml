@@ -1,0 +1,34 @@
+services:
+  quizz:
+    image: pknw1/quizz:latest #ghcr.io/hotio/quizz
+    user: 0:666
+    networks:
+      - public
+    container_name: quizz
+    hostname: quizz
+    volumes:
+      - /etc/docker/config/quizz:/config
+      - /dev/fuse:/dev/fuse
+      - /media:/media
+      - /downloads:/downloads
+      - /downloads:/download
+    environment:
+      - APP_GROUP=Requests
+      - APP_LOGO=https://static-00.iconduck.com/assets.00/quizz-icon-231x256-t45eodqo.png
+      - VIRTUAL_HOST=quizz.pknw1.co.uk
+      - VIRTUAL_PORT=3000
+      - PUID=666
+      - PGID=666
+
+networks:
+  admin:
+    external: true
+    name: admin
+
+  secure:
+    external: true
+    name: secure
+    
+  public:
+    external: true
+    name: public

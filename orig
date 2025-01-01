@@ -1,0 +1,78 @@
+from flask import Flask, render_template
+import pygsheets
+import random
+app = Flask(__name__)
+
+
+# Sample data with Category and Reference fields
+data = [
+    {
+        "Question": "Question 'test' Here",
+        "Category": "General Knowledge",
+        "Reference": "https://example.com",
+        "Correct": ["Answer test 1", "Answer 2"],
+        "Incorrect": ["Answer 3", "Answer 4", "Answer 5"]
+    },
+    {
+        "Question": "Another Question",
+        "Category": "Science",
+        "Reference": "https://example.org",
+        "Correct": ["Correct 1"],
+        "Incorrect": ["Wrong 1", "Wrong 2", "Wrong 3"]
+    },
+   {
+        "Question": "What is the workflow for deploying new infrastructure with Terraform?",
+        "Category": "Science",
+        "Reference": "https://example.org",
+        "Correct": ["terraform plan to import the current infrastructure to the state file make code changes and terraform apply to update the infrastructure"],
+        "Incorrect": ["terraform import to import the current infrastructure to the state file, make code changes, and terraform apply to update the infrastructure.", "Write a Terraform configuration, run terraform init, run terraform plan to view planned infrastructure changes, and terraform apply to create new infrastructure.", "Write a Terraform configuration, run terraform show to view proposed changes, and terraform apply to create new infrastructure."]
+    }
+]
+
+def fetch_data_from_sheets(Category):
+    # Authenticate and open the Google Sheet
+    gc = pygsheets.authorize(service_file='config/auth.json')
+    sh = gc.open_by_key('1ciI0PV5hMJ-qEk9J5gznf0zfeeClxJ8n67nYOn1H2VM')
+    worksheet = sh.worksheet('title',Category)
+
+    # Fetch all rows as dictionaries
+    rows = worksheet.get_all_records()
+
+    # Process the data into the required format
+    data = []
+    for row in rows:
+        question  = row['Question']
+        reference = row['Reference']
+        correct_answers = row['Correct'].split(',') if row['Correct'] else []
+        incorrect_answers = row['Incorrect'].split(',') if row['Incorrect'] else []
+
+
+        # Shuffle all answers
+        shuffled_answers = correct_answers + incorrect_answers
+        random.shuffle(shuffled_answers)
+
+        data.append({
+            'Question': question,
+            'Category': Category,
+            'Reference': row['Reference'],
+            'Correct': correct_answers,
+            'Incorrect': incorrect_answers,
+            'ShuffledAnswers': shuffled_answers
+        })
+
+    return data
+
+@app.route("/<category>")
+@app.route("/")
+def index(category=None):
+    if category == None:
+        category = "terraform"
+    data = fetch_data_from_sheets(category)
+    for item in data:
+        answers = item["Correct"] + item["Incorrect"]
+        random.shuffle(answers)  # Shuffle answers to display them randomly
+        item["ShuffledAnswers"] = answers
+    return render_template("index.html", data=data)
+
+if __name__ == "__main__":
+    app.run(debug=True)
