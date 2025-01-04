@@ -83,7 +83,7 @@
 </head>
 <body>
     <div class="options-container">
-	    <form action="/" method="GET">
+	    <form action="/quiz" method="POST">
 	<img src="https://opentdb.com/images/logo-banner.png" />
 	<span>Free to use, user-contributed trivia question database.</span>
 <select name="mySource" id="mySource" >
@@ -102,8 +102,8 @@
 </select>
 
 <select name="difficulty" id="difficulty" >
-  <option value="">difficulty</option>
-  <option value="">mixed</option>
+  <option value="mixed">difficulty</option>
+  <option value="mixed">mixed</option>
   <option value="&difficulty=easy">easy</option>
   <option value="&difficulty=medium">medium</option>
   <option value="&difficulty=hard">hard</option>
@@ -121,9 +121,19 @@
 	    </div>
     
     {% for item in data %}
+    {% if item.difficulty == 'easy' %}
         <div class="question-container" style="background-color: lightgreen;">
-    {% if item.count %}
-    <div class="question">{{ item.count}} - {{ item.question }} {% if item.reference %} <i>[{{ item.reference }} ]</i>{% endif %}</div>
+    {% endif %}
+
+    {% if item.difficulty == 'medium' %}
+       <div class="question-container" style="background-color: #ffff006e;">
+    {% endif %}
+
+    {% if item.difficulty == 'hard' %}
+        <div class="question-container" style="background-color: #ff000075;">
+    {% endif %}
+    {% if item.question_number %}
+    <div class="question"><b>{{ item.question_number }} - {{ item.question }} </b> <p>[Category: {{ item.category }}] [Difficulty: {{ item.difficulty }}]</p></div>
             <div class="metadata">
             </div>
             <div class="answers" data-correct="{{ item.correct_answer }}">

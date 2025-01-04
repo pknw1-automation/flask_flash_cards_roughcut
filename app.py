@@ -11,7 +11,11 @@ config.read('config.ini')
 app = Flask(__name__)
 
 @app.route("/")
-def start():
+def index():
+    return render_template('index.html')
+
+@app.route("/quiz", methods = ['POST','GET'])
+def quiz():
     data = []
     data.append({
 	"source_name": "Open Trivia DB",
@@ -69,7 +73,10 @@ def start():
         #print("Number of Questions : "+questions)
         #print("Question Difficulty : "+difficulty)
         #print("Selected Category : "+category)
-        source = "https://opentdb.com/api.php?"+questions+difficulty
+        if difficulty == 'mixed':
+            source = "https://opentdb.com/api.php?"+questions
+        else:
+            source = "https://opentdb.com/api.php?"+questions+difficulty
         data = []
         with urllib.request.urlopen(source) as url:
             d = json.load(url)
@@ -97,7 +104,7 @@ def start():
     else:
         print("whoops")
 
-    return render_template("index.html", data=data)
+    return render_template("quiz.html", data=data)
 
 
 
@@ -124,6 +131,8 @@ def fetch_data_from_sheets(Category="terraform"):
             'count': count,
             'question': question,
             'reference': reference,
+            'difficulty': row['Difficulty'],
+            'category': row['Category'],
             'correct_answer': correct_answer,
             'incorrect_answers': incorrect_answers,
             'shuffled_answers': shuffled_answers
