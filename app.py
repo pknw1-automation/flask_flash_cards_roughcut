@@ -4,6 +4,7 @@ import random
 import json
 import urllib
 import configparser
+from collections import defaultdict
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -74,9 +75,9 @@ def quiz():
         #print("Question Difficulty : "+difficulty)
         #print("Selected Category : "+category)
         if difficulty == 'mixed':
-            source = "https://opentdb.com/api.php?"+questions
+            source = "https://opentdb.com/api.php?"+questions+category
         else:
-            source = "https://opentdb.com/api.php?"+questions+difficulty
+            source = "https://opentdb.com/api.php?"+questions+difficulty+category
         data = []
         with urllib.request.urlopen(source) as url:
             d = json.load(url)
@@ -90,6 +91,7 @@ def quiz():
             for wrong_answer in item["incorrect_answers"]:
                 shuffled_answers.append(wrong_answer.replace('&quot;','"').replace('&amp;','&').replace('&#039;','`').replace('&rsquo;','`'))
                 incorrect_answers.append(wrong_answer.replace('&quot;','"').replace('&amp;','&').replace('&#039;','`').replace('&rsquo;','`'))
+            random.shuffle(shuffled_answers)
             data.append({
                 'question_number': count,
                 'question': item["question"].replace('&quot;','"').replace('&amp;','&').replace('&#039;','`').replace('&rsquo;','`'),
@@ -100,10 +102,10 @@ def quiz():
                 'shuffled_answers' : shuffled_answers
             })
             count=(count+1)
-
     else:
         print("whoops")
 
+    print(data)
     return render_template("quiz.html", data=data)
 
 

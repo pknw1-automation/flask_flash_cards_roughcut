@@ -94,7 +94,6 @@
 <select name="myQuestions" id="myQuestions" >
   <option value="amount=25"># of Questions</option>
   <option value="amount=1">1</option>
-  <option value="amount=3">3</option>
   <option value="amount=10">10</option>
   <option value="amount=20">20</option>
   <option value="amount=30">30</option>
@@ -143,7 +142,6 @@
                     <button onclick="toggleAnswer(this, '{{ answer }}')">{{ answer }}</button>
                 {% endfor %}
             </div>
-	    <div id="reveal_answer" style="display:none;">The correct answer is <b>{{ item['correct_answer'] }}</b></div>
             <div class="complete" style="display: none;">Complete</div>
         </div>
 {% endif %}
@@ -173,36 +171,29 @@ function myCategories() {
   var x = document.getElementById("trivia").value;
   document.getElementById("trivia_msg").innerHTML = "You selected: " + x + "category";
 }
-function toggleAnswer(button, answer) {
-    const parent = button.parentElement;
+        function toggleAnswer(button, answer) {
+            const parent = button.parentElement;
+            const correctAnswers = parent.getAttribute("data-correct");
+            const isCorrect = correctAnswers.includes(answer);
 
-    // Check if selection is already made
-    if (parent.getAttribute("data-selection-made") === "true") {
-        return; // Prevent further interactions
-    }
+            // Toggle button state
+            if (button.classList.contains("correct") || button.classList.contains("incorrect")) {
+                button.classList.remove("correct", "incorrect");
+            } else {
+                button.classList.add(isCorrect ? "correct" : "incorrect");
+            }
 
-    const correctAnswers = parent.getAttribute("data-correct").split(",");
-    const isCorrect = correctAnswers.includes(answer);
+            // Check completion
+            const selectedCorrect = [...parent.querySelectorAll(".correct")].map(btn => btn.textContent);
+            const selectedIncorrect = [...parent.querySelectorAll(".incorrect")].length;
 
-    // Apply appropriate class to the button
-    button.classList.add(isCorrect ? "correct" : "incorrect");
+            const isComplete = 
+                correctAnswers.every(ans => selectedCorrect.includes(ans)) && 
+                selectedCorrect.length === correctAnswers.length && 
+                selectedIncorrect === 0;
 
-    // Mark the selection as completed
-    parent.setAttribute("data-selection-made", "true");
-    // Check completion
-    const selectedCorrect = [...parent.querySelectorAll(".correct")].map(btn => btn.textContent);
-    const selectedIncorrect = [...parent.querySelectorAll(".incorrect")].length;
-    
-    const isComplete = 
-        correctAnswers.every(ans => selectedCorrect.includes(ans)) && 
-        selectedCorrect.length === correctAnswers.length && 
-        selectedIncorrect === 0;
-
-    parent.nextElementSibling.style.display = isComplete ? "block" : "none";
-    parent.nextElementSibling.style.display = isComplete ? "none" : "block";
-
-}
-
+            parent.nextElementSibling.style.display = isComplete ? "block" : "none";
+        }
     </script>
 </body>
 </html>
